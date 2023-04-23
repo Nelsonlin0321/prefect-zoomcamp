@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 
 
 def ingest_data(user, password, host, port, db, table_name, url):
-    
+
     # the backup files are gzipped, and it's important to keep the correct extension
     # for pandas to be able to open the file
     if url.endswith('.csv.gz'):
@@ -31,12 +31,11 @@ def ingest_data(user, password, host, port, db, table_name, url):
 
     df.to_sql(name=table_name, con=engine, if_exists='append')
 
-
-    while True: 
+    while True:
 
         try:
             t_start = time()
-            
+
             df = next(df_iter)
 
             df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
@@ -46,11 +45,13 @@ def ingest_data(user, password, host, port, db, table_name, url):
 
             t_end = time()
 
-            print('inserted another chunk, took %.3f second' % (t_end - t_start))
+            print('inserted another chunk, took %.3f second' %
+                  (t_end - t_start))
 
         except StopIteration:
             print("Finished ingesting data into the postgres database")
             break
+
 
 if __name__ == '__main__':
     user = "postgres"
